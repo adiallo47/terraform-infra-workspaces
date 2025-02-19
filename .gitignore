@@ -1,0 +1,49 @@
+# terraform state files
+*.tfstate
+*.tfstate.backup
+
+# terraform lock file
+.terraform.lock.hcl
+
+# terragrunt cache
+.terragrunt-cache/
+
+# terraform directories
+.terraform/
+.terraform.d/
+
+# tfvars files that have sensitive data
+*.tfvars
+*.tfvars.json
+
+# override files as they are user-specific
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# generated files
+crash.log
+*.log
+*.bak
+
+# private SSH keys
+*.pem
+*.key
+
+# local environment settings
+.env
+.envrc
+*.tfenvrc
+
+# macOS system files
+.DS_Store
+
+# Ignore temporary and backup files
+*.swp
+*.swo
+*.bak
+*.tmp
+*.backup
+
+.github/workflows/*.log
