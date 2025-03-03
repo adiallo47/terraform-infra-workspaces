@@ -16,7 +16,6 @@ resource "aws_workspaces_workspace" "prod_workspaces" {
     directory_id = var.directory_id
     bundle_id = var.custom_image_id
     user_name = var.prod_user_name
-    #module.workspaces_users.user_name
 
     root_volume_encryption_enabled = false
     user_volume_encryption_enabled = false
@@ -40,7 +39,6 @@ resource "aws_workspaces_workspace" "testing_workspaces" {
   directory_id = var.directory_id
   bundle_id = var.bundle_id
   user_name = var.user_name
-  #module.workspaces_users.user_name
   
   root_volume_encryption_enabled = false
   user_volume_encryption_enabled = false

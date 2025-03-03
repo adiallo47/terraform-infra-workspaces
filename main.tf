@@ -62,7 +62,7 @@ module "workspaces_production" {
   bundle_id = var.bundle_id
   user_name = var.user_name
   custom_image_id = var.custom_image_id
-  prod_user_name = var.prod_user_name
+  prod_user_name = local.users
   environment = "production"
 }
 
@@ -86,7 +86,6 @@ module "workspaces_users" {
   source = "./modules/workspaces-users"
   region = var.region
   directory_id = module.directory_service.directory_id
-  user_name = var.user_name
-  user_password =  var.user_password
-  ec2_instance_id = var.ec2_instance_id
+  users = local.users
+  bundle_id = var.bundle_id
 }

@@ -8,18 +8,12 @@ variable "directory_id" {
   description = "AWS Simple AD directory name"
 }
 
-variable "user_name" {
+variable "users" {
   type = string
   description = "Username to be created"
 }
 
-variable "user_password" {
+variable bundle_id {
   type = string
-  description = "Password for the user"
-  sensitive = true
-}
-
-variable "ec2_instance_id" {
-  type = string
-  description = "EC2 instance ID to execute SSM commands"
+  description = "SSM bundle ID"
 }

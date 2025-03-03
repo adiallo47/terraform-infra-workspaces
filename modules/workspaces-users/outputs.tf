@@ -1,5 +1,5 @@
 output "user_name" {
-  value = var.user_name
+  value = var.users
 }
 
 output "ssm_document_name" {

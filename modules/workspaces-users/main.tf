@@ -11,42 +11,19 @@ provider "aws" {
   region = var.region
 }
 
-resource "aws_ssm_association" "execute_create_user" {
-  name = aws_ssm_document.create_workspaces_user.name
-  instance_id = var.ec2_instance_id 
-
-  parameters = {
-    "commands" = "powershell.exe -Command \"& {New-Item -Path C:\\Temp -ItemType Directory}\"\npowershell.exe -File C:\\create_user.ps1"
-  }
-  
+variable "directory_id" {}
+variable "users" {
+  type = list(object({
+    username   = string
+    first_name = string
+    last_name  = string
+    email      = string
+  }))
+  default = []
 }
-
-resource "aws_ssm_document" "create_workspaces_user" {
-  name          = "CreateWorkSpacesUser"
-  document_type = "Command"
-
-  lifecycle { create_before_destroy = true }
-
-  content = <<EOT
-{
-  "schemaVersion": "1.2",
-  "description": "Create a WorkSpaces user in AWS Simple AD",
-  "parameters": {
-    "commands": {
-      "type": "StringList",
-      "description": "List of PowerShell commands to execute"
-    }
-  },
-  "runtimeConfig": {
-    "aws:runPowerShellScript": {
-      "properties": [
-        {
-          "id": "0.aws:runPowerShellScript",
-          "runCommand": "{{ commands }}"
-        }
-      ]
-    }
-  }
-}
-EOT
+resource "aws_workspaces_workspace" "new_user" {
+  for_each = { for user in var.users : user.username => user }
+  directory_id = var.directory_id
+  user_name    = each.key
+  bundle_id    = var.bundle_id
 }

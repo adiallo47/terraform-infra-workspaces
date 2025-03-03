@@ -43,11 +43,6 @@ variable "user_name" {
   default = ""
 }
 
-# variable "user_name_prod" {
-#   description = "list of user names for Directory Service"
-#   type = string
-# }
-
 variable "user_password" {
   description = "password for Directory Service"
   type = string
@@ -111,4 +106,13 @@ variable "custom_image_id" {
 variable "prod_user_name" {
   description = "Prod user name"
   type = string
+}
+
+variable "users" {
+  type = list(object({
+    username   = string
+    first_name = string
+    last_name  = string
+    email      = string
+  }))
 }
