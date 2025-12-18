@@ -44,6 +44,18 @@ module "security_group_production" {
   workspace_vpc = module.vpc.vpcworkspace_id
   environment = var.env1
   region = var.region
+  my_ip = var.my_ip
+}
+
+module "workspaces_production" {
+  source = "./modules/workspaces"
+  workspace_type = "production"
+  directory_id = module.directory_service.directory_id
+  bundle_id = var.bundle_id
+  user_name = var.user_name
+  custom_image_id = var.custom_image_id
+  prod_user_name = local.users[0].username
+  environment = "production"
 }
 
 module "security_group_testing" {
@@ -51,27 +63,13 @@ module "security_group_testing" {
   workspace_vpc = module.vpc.vpcworkspace_id
   environment = var.env2
   region = var.region
+  my_ip = var.my_ip
 }
-
-
-module "workspaces_production" {
-  source = "./modules/workspaces"
-  workspace_type = "production"
-  directory_id = module.directory_service.directory_id
-  #var.directory_id
-  bundle_id = var.bundle_id
-  user_name = var.user_name
-  custom_image_id = var.custom_image_id
-  prod_user_name = local.users
-  environment = "production"
-}
-
 
 module "workspaces_testing" {
   source = "./modules/workspaces"
   workspace_type = "testing"
   directory_id = module.directory_service.directory_id
-  #var.directory_id
   bundle_id = var.bundle_id
   user_name = var.user_name
   environment = "testing"
@@ -82,10 +80,39 @@ module "iam" {
   region = var.region
 }
 
+module "ec2" {
+  source = "./modules/ec2"
+  region = var.region
+  directory_id = module.directory_service.directory_id
+  ami = var.ami
+  instance_type = var.instance_type
+  iam_instance_profile = module.iam.instance_profile
+  subnet_ids = concat(module.vpc.production_subnet, module.vpc.test_subnet)
+  vpc_security_group_ids = [module.security_group_production.security_group_id]
+}
+
 module "workspaces_users" {
   source = "./modules/workspaces-users"
   region = var.region
   directory_id = module.directory_service.directory_id
   users = local.users
   bundle_id = var.bundle_id
+}
+
+module "jumpserver"{
+  source = "./modules/jump-server"
+  region = var.region
+  public_subnet = module.vpc.public
+  key_pair_name = module.iam.key_pair_name
+  security_group_id = module.security_group_production.security_group_id
+}
+
+resource "null_resource" "convert_users" {
+  provisioner "local-exec" {
+    command = "ansible-playbook ../ansible-config/playbooks/convert-users.yml"
+  }
+
+  triggers = {
+    always_run = "${timestamp()}"
+  }
 }

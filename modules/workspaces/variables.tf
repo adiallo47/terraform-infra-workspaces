@@ -34,3 +34,14 @@ variable "workspace_type" {
   type = string
   description = "Type of workspace to create (production or testing)"
 }
+
+variable "users"{
+      description = "List of users to create AWS WorkSpaces for"
+  type = list(object({
+    username   = string
+    first_name = string
+    last_name  = string
+    email      = string
+  }))
+  default = []
+}

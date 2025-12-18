@@ -13,3 +13,7 @@ output "iam_policy_arn"{
 output "instance_profile"{
     value = aws_iam_instance_profile.ssm_instance_profile.name
 }
+
+output "key_pair_name" {
+  value = aws_key_pair.my_key.key_name
+}

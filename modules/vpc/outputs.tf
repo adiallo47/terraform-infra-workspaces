@@ -29,3 +29,9 @@ output "test_subnet"{
 output "vpc_cidr_block_test"{
     value = var.vpc_cidr_block_test
 }
+
+output "public" {
+    value = [
+        aws_subnet.public_subnet.id
+    ]
+}

@@ -19,14 +19,17 @@ resource "aws_security_group" "workspaces_sg" {
     environment = var.environment
   }
 }
+
 resource "aws_security_group_rule" "allow_ssh" {
     security_group_id = aws_security_group.workspaces_sg.id
     type = "ingress"
     from_port = 22
     to_port = 22
     protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Open to all 
+    source_security_group_id = length(data.aws_security_group.existing_bastion_sg.id) > 0 ? data.aws_security_group.existing_bastion_sg.id : aws_security_group.bastion_sg[0].id
 }
+    #aws_security_group.bastion_sg[0].id 
+    
 
 # allow PCoIP (AWS WorkSpaces streaming)
 resource "aws_security_group_rule" "allow_pcoip_tcp" {
@@ -67,3 +70,32 @@ resource "aws_security_group_rule" "allow_outbound" {
     cidr_blocks = ["0.0.0.0/0"]
 }
 
+resource "aws_security_group" "bastion_sg" {
+  count       = length(data.aws_security_group.existing_bastion_sg.id) > 0 ? 0 : 1
+  name        = "bastion_sg"
+  vpc_id      = var.workspace_vpc
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.my_ip]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = {
+    Name = "jump-server-security-group"
+  }
+}
+
+data "aws_security_group" "existing_bastion_sg" {
+  filter {
+    name   = "group-name"
+    values = ["bastion_sg"]
+  }
+}

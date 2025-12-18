@@ -14,13 +14,16 @@ provider "aws" {
 data "aws_directory_service_directory" "selected_directory" {
   directory_id = var.directory_id
 }
-resource "aws_instance" "ssm_ec2_instance" {
-  ami = "ami-04b4f1a9cf54c11d0" # unbuntu
-  instance_type = "t2.micro"
-  subnet_id  = [ module.vpc.vpcworkspace_id, module.vpc.test_subnet ]
-  iam_instance_profile = module.iam_instance_profile.ssm_instance_profile.name
 
+resource "aws_instance" "ssm_ec2_instance" {
+  ami = var.ami
+  instance_type = var.instance_type
+  subnet_id  = var.subnet_ids[0]
+  vpc_security_group_ids = var.vpc_security_group_ids
+  # [ module.vpc.vpcworkspace_id, module.vpc.test_subnet ]
+  iam_instance_profile = var.iam_instance_profile
+  
   tags = {
-    Name = "SSM-Instance"
+    Name = "SSM-Workspace-Instance"
   }
 }

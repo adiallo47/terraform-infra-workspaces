@@ -12,10 +12,11 @@ provider "aws" {
 }
 
 resource "aws_workspaces_workspace" "prod_workspaces" {
-    count = var.workspace_type == "production" ? 1 : 0
+  for_each = { for user in var.users : user.username => user if var.workspace_type == "production" }
+    #count = var.workspace_type == "production" ? 1 : 0
     directory_id = var.directory_id
     bundle_id = var.custom_image_id
-    user_name = var.prod_user_name
+    user_name = each.value.username
 
     root_volume_encryption_enabled = false
     user_volume_encryption_enabled = false

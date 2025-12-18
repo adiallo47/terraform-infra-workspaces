@@ -1,5 +1,6 @@
 data "local_file" "users" {
-  filename = "${path.module}/users.json"
+  #filename = file("/Users/amadoudiallo/ideaprojects/workspace-deployment/ansible-config/group_vars/users.yml")
+  filename = "/Users/amadoudiallo/ideaprojects/workspace-deployment/terraform-infrastructure/users.json"
 }
 
 locals {

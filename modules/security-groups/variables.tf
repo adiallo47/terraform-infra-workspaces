@@ -12,3 +12,8 @@ variable region {
     type = string
     description = "the AWS region where resources will be created"
 }
+
+variable "my_ip"  {
+  description = "My IP address"
+  type = string
+}
