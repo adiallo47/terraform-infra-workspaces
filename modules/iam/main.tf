@@ -156,7 +156,7 @@ resource "aws_iam_policy" "ssm_ec2_policy" {
 }
 
 resource "aws_key_pair" "my_key" {
-  key_name   = "jump-server-key"
+  key_name = "jump-server-key"
   #public_key = file("/Users/amadoudiallo/.ssh/id_ed25519.pub")
   public_key = var.public_key
 }
