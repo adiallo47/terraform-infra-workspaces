@@ -76,8 +76,9 @@ module "workspaces_testing" {
 }
 
 module "iam" {
-  source = "./modules/iam"
-  region = var.region
+  source     = "./modules/iam"
+  region     = var.region
+  public_key = var.public_key
 }
 
 module "ec2" {

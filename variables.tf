@@ -129,3 +129,9 @@ variable "my_ip" {
   description = "My IP"
   type        = string
 }
+
+variable "public_key" {
+  description = "value of public key"
+  type        = string
+}
+
