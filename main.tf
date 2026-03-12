@@ -9,7 +9,7 @@ terraform {
 
 provider "aws" {
   region = "us-east-1"
-  alias = "useast1"
+  alias  = "useast1"
 }
 
 data "aws_secretsmanager_secret" "user_password" {
@@ -27,52 +27,52 @@ module "vpc" {
 }
 
 module "directory_service" {
-  source = "./modules/directory-service"
-  region = "us-east-1"
-  vpc_id = module.vpc.vpcworkspace_id
-  subnet_ids = concat(module.vpc.production_subnet, module.vpc.test_subnet)
-  directory_id = module.directory_service.directory_id  
-  environment = "AWS"
+  source        = "./modules/directory-service"
+  region        = "us-east-1"
+  vpc_id        = module.vpc.vpcworkspace_id
+  subnet_ids    = concat(module.vpc.production_subnet, module.vpc.test_subnet)
+  directory_id  = module.directory_service.directory_id
+  environment   = "AWS"
   user_password = data.aws_secretsmanager_secret_version.user_password_value.secret_string
   # var.user_password
   ip_group_name = var.ip_group_name
-  ip_address = var.address
+  ip_address    = var.address
 }
 
 module "security_group_production" {
-  source = "./modules/security-groups"
+  source        = "./modules/security-groups"
   workspace_vpc = module.vpc.vpcworkspace_id
-  environment = var.env1
-  region = var.region
-  my_ip = var.my_ip
+  environment   = var.env1
+  region        = var.region
+  my_ip         = var.my_ip
 }
 
 module "workspaces_production" {
-  source = "./modules/workspaces"
-  workspace_type = "production"
-  directory_id = module.directory_service.directory_id
-  bundle_id = var.bundle_id
-  user_name = var.user_name
+  source          = "./modules/workspaces"
+  workspace_type  = "production"
+  directory_id    = module.directory_service.directory_id
+  bundle_id       = var.bundle_id
+  user_name       = var.user_name
   custom_image_id = var.custom_image_id
-  prod_user_name = local.users[0].username
-  environment = "production"
+  prod_user_name  = local.users[0].username
+  environment     = "production"
 }
 
 module "security_group_testing" {
-  source = "./modules/security-groups"
+  source        = "./modules/security-groups"
   workspace_vpc = module.vpc.vpcworkspace_id
-  environment = var.env2
-  region = var.region
-  my_ip = var.my_ip
+  environment   = var.env2
+  region        = var.region
+  my_ip         = var.my_ip
 }
 
 module "workspaces_testing" {
-  source = "./modules/workspaces"
+  source         = "./modules/workspaces"
   workspace_type = "testing"
-  directory_id = module.directory_service.directory_id
-  bundle_id = var.bundle_id
-  user_name = var.user_name
-  environment = "testing"
+  directory_id   = module.directory_service.directory_id
+  bundle_id      = var.bundle_id
+  user_name      = var.user_name
+  environment    = "testing"
 }
 
 module "iam" {
@@ -81,29 +81,29 @@ module "iam" {
 }
 
 module "ec2" {
-  source = "./modules/ec2"
-  region = var.region
-  directory_id = module.directory_service.directory_id
-  ami = var.ami
-  instance_type = var.instance_type
-  iam_instance_profile = module.iam.instance_profile
-  subnet_ids = concat(module.vpc.production_subnet, module.vpc.test_subnet)
+  source                 = "./modules/ec2"
+  region                 = var.region
+  directory_id           = module.directory_service.directory_id
+  ami                    = var.ami
+  instance_type          = var.instance_type
+  iam_instance_profile   = module.iam.instance_profile
+  subnet_ids             = concat(module.vpc.production_subnet, module.vpc.test_subnet)
   vpc_security_group_ids = [module.security_group_production.security_group_id]
 }
 
 module "workspaces_users" {
-  source = "./modules/workspaces-users"
-  region = var.region
+  source       = "./modules/workspaces-users"
+  region       = var.region
   directory_id = module.directory_service.directory_id
-  users = local.users
-  bundle_id = var.bundle_id
+  users        = local.users
+  bundle_id    = var.bundle_id
 }
 
-module "jumpserver"{
-  source = "./modules/jump-server"
-  region = var.region
-  public_subnet = module.vpc.public
-  key_pair_name = module.iam.key_pair_name
+module "jumpserver" {
+  source            = "./modules/jump-server"
+  region            = var.region
+  public_subnet     = module.vpc.public
+  key_pair_name     = module.iam.key_pair_name
   security_group_id = module.security_group_production.security_group_id
 }
 

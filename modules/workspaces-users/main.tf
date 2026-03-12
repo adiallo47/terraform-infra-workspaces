@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 resource "aws_workspaces_workspace" "new_user" {
-  for_each = { for user in var.users : user.username => user if user.username != "" }
+  for_each     = { for user in var.users : user.username => user if user.username != "" }
   directory_id = var.directory_id
   user_name    = each.value.username
   bundle_id    = var.bundle_id

@@ -12,9 +12,9 @@ provider "aws" {
 }
 
 resource "aws_vpc" "workspaces_vpc" {
-    cidr_block = var.vpc_cidr_block_main # MAIN /24 for 256 ips
-    enable_dns_support = true
-    enable_dns_hostnames = true
+  cidr_block           = var.vpc_cidr_block_main # MAIN /24 for 256 ips
+  enable_dns_support   = true
+  enable_dns_hostnames = true
 
   tags = {
     Name = "workspaces-vpc-main"
@@ -25,10 +25,10 @@ resource "aws_vpc" "workspaces_vpc" {
 }
 
 resource "aws_subnet" "workspaces_subnet_prod" { # subnet1 private workspaces prod
-  vpc_id = aws_vpc.workspaces_vpc.id
-  cidr_block = var.vpc_cidr_block_prod # /26 for 64 ips
-  availability_zone = var.az1
-  map_public_ip_on_launch = false  # workspaces need private ip
+  vpc_id                  = aws_vpc.workspaces_vpc.id
+  cidr_block              = var.vpc_cidr_block_prod # /26 for 64 ips
+  availability_zone       = var.az1
+  map_public_ip_on_launch = false # workspaces need private ip
 
   tags = {
     Name = "workspaces-subnet-prod-private"
@@ -39,10 +39,10 @@ resource "aws_subnet" "workspaces_subnet_prod" { # subnet1 private workspaces pr
 }
 
 resource "aws_subnet" "workspaces_subnet_test" { # subnet2 private only needed for testing environment
-  vpc_id = aws_vpc.workspaces_vpc.id
-  cidr_block = var.vpc_cidr_block_test # /28 for 16 ips
-  availability_zone = var.az2
-  map_public_ip_on_launch = false  
+  vpc_id                  = aws_vpc.workspaces_vpc.id
+  cidr_block              = var.vpc_cidr_block_test # /28 for 16 ips
+  availability_zone       = var.az2
+  map_public_ip_on_launch = false
 
   tags = {
     Name = "workspaces-subnet-test-private"
@@ -53,9 +53,9 @@ resource "aws_subnet" "workspaces_subnet_test" { # subnet2 private only needed f
 }
 
 resource "aws_subnet" "public_subnet" { # subnet3 public
-  vpc_id = aws_vpc.workspaces_vpc.id
-  cidr_block = var.vpc_cidr_block_public
-  availability_zone = var.az3
+  vpc_id                  = aws_vpc.workspaces_vpc.id
+  cidr_block              = var.vpc_cidr_block_public
+  availability_zone       = var.az3
   map_public_ip_on_launch = true
 
   tags = {
@@ -85,18 +85,18 @@ resource "aws_route_table" "public_route_table" { # route table to gateway
 }
 
 resource "aws_route_table_association" "public_association" { # public subnet to route table : internet gateway
-  subnet_id = aws_subnet.public_subnet.id
+  subnet_id      = aws_subnet.public_subnet.id
   route_table_id = aws_route_table.public_route_table.id
 }
 
 resource "aws_route_table_association" "prod_association" { # production subnet to private NAT
-  subnet_id = aws_subnet.workspaces_subnet_prod.id 
+  subnet_id      = aws_subnet.workspaces_subnet_prod.id
   route_table_id = aws_route_table.private_route_table.id
 }
 
 
 resource "aws_route_table_association" "test_association" { # test subnet to private NAT
-  subnet_id = aws_subnet.workspaces_subnet_test.id
+  subnet_id      = aws_subnet.workspaces_subnet_test.id
   route_table_id = aws_route_table.private_route_table.id
 }
 
@@ -107,21 +107,21 @@ resource "aws_eip" "nat_eip" {
 
 resource "aws_nat_gateway" "nat" {
   allocation_id = aws_eip.nat_eip.id
-  subnet_id = aws_subnet.public_subnet.id  # public subnet
-  tags = { 
-    Name = "NAT gateway" 
-    }
+  subnet_id     = aws_subnet.public_subnet.id # public subnet
+  tags = {
+    Name = "NAT gateway"
+  }
 }
 
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.workspaces_vpc.id
 
   route {
-    cidr_block = var.route_table_cidr_block
-    nat_gateway_id = aws_nat_gateway.nat.id  # private subnets route through NAT
+    cidr_block     = var.route_table_cidr_block
+    nat_gateway_id = aws_nat_gateway.nat.id # private subnets route through NAT
   }
 
-  tags = { 
+  tags = {
     Name = "private-workspaces-route table"
-    }
+  }
 }

@@ -1,10 +1,10 @@
 variable "region" {
-  type = string
+  type        = string
   description = "AWS region"
 }
 
-variable bundle_id {
-  type = string
+variable "bundle_id" {
+  type        = string
   description = "SSM bundle ID"
 }
 
@@ -18,10 +18,10 @@ variable "users" {
     email      = string
   }))
   default = [{
-      username  = "test-user"
-      first_name = "Test"
-      last_name = "User"
-      email = "test.user@example.com"
+    username   = "test-user"
+    first_name = "Test"
+    last_name  = "User"
+    email      = "test.user@example.com"
     }
   ]
 }

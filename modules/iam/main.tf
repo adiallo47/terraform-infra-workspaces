@@ -145,9 +145,9 @@ resource "aws_iam_policy" "ssm_ec2_policy" {
         Effect = "Allow"
         Action = [
           "ssm:*",
-				  "ec2-instance-connect:*",
-				  "ec2messages:*",
-				  "ds:*"
+          "ec2-instance-connect:*",
+          "ec2messages:*",
+          "ds:*"
         ]
         Resource = "*"
       }
@@ -156,12 +156,12 @@ resource "aws_iam_policy" "ssm_ec2_policy" {
 }
 
 resource "aws_key_pair" "my_key" {
-  key_name   = "jump-server-key"  
-  public_key = file("/Users/amadoudiallo/.ssh/id_ed25519.pub") 
+  key_name   = "jump-server-key"
+  public_key = file("/Users/amadoudiallo/.ssh/id_ed25519.pub")
 }
 
 resource "aws_iam_role_policy_attachment" "workspaces_role_policy_attach" {
-  role = aws_iam_role.workspaces_role.name
+  role       = aws_iam_role.workspaces_role.name
   policy_arn = aws_iam_policy.workspaces_policy.arn
 }
 

@@ -1,19 +1,19 @@
 variable "workspace_vpc" {
   description = "VPC ID where the security group will be created"
-  type = string
+  type        = string
 }
 
 variable "environment" {
   description = "environment name"
-  type = string
+  type        = string
 }
 
-variable region {
-    type = string
-    description = "the AWS region where resources will be created"
+variable "region" {
+  type        = string
+  description = "the AWS region where resources will be created"
 }
 
-variable "my_ip"  {
+variable "my_ip" {
   description = "My IP address"
-  type = string
+  type        = string
 }
